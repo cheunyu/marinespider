@@ -30,7 +30,7 @@ for i in tr:
     for j in range(len(td)):
         if(len(td) == 6):
             if(j != 5):
-                # print(td[j + 1])
+                print(td[j + 1])
                 data_arr.append(td[j + 1])
         else:
             data_arr.append(td[j])
