@@ -65,12 +65,31 @@ class CostalSpider(object):
                 db.rollback()
         db.close()
 
+    # 记录日记
+    def log(url_dict):
+        file = open('logs.txt', 'a+', encoding='utf-8')
+        for key in url_dict:  # 迭代url字典把连接写入日志文件
+            file.write(url_dict[key] + '\n')
+        file.close()
+
+    # 判断页面数据是否抓取锅
+    def flag_log(url_dict):
+        # a+模式文件不存在则创建，追加位置从文本末尾开始
+        file = open('logs.txt', 'a+', encoding='utf-8')
+        file.seek(0)  # 为了读取文件，把游标设置到文件头开始读
+        for line in file:  # 逐行遍历文件内容
+            for key in list(url_dict.keys()):  # 遍历页面抓取的JS链接URL，如果相同即抓过数据了，从URL字典里删除
+                if(url_dict[key] + '\n' == line):
+                    url_dict.pop(key)
+        file.close()
+
     if __name__ == '__main__':
         url = 'http://www.nmc.cn/publish/marine/newcoastal.html'
         html_text = get_content(url)
         url_dict = get_allurl(html_text)
+        flag_log(url_dict)
         for key in url_dict:
-            print(key, url_dict[key])
             tmp_text = get_content(url_dict[key])
             result = get_data(tmp_text, key)
             save_db(result)
+        log(url_dict)
