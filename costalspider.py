@@ -1,19 +1,10 @@
 from bs4 import BeautifulSoup
 import urllib.request
 import pymysql
+import os
 
 
 class CostalSpider(object):
-    """docstring for Spider"""
-
-    # def __init__(self, ocean_name, forecast_time, phenomenon, wind_direction, wind_power, visibility):
-    #     super(Spider, self).__init__()
-    #     self.ocean_name = ocean_name
-    #     self.forecast_time = forecast_time
-    #     self.phenomenon = phenomenon
-    #     self.wind_direction = wind_direction
-    #     self.wind_power = wind_power
-    #     self.visibility = visibility
 
     # 解析页面获取HMTL文本数据
     def get_content(url):
@@ -67,15 +58,19 @@ class CostalSpider(object):
 
     # 记录日记
     def log(url_dict):
-        file = open('logs.txt', 'a+', encoding='utf-8')
+        file = open('./logs.txt', 'a+', encoding='utf-8')
         for key in url_dict:  # 迭代url字典把连接写入日志文件
             file.write(url_dict[key] + '\n')
         file.close()
 
-    # 判断页面数据是否抓取锅
+    # 判断页面数据是否抓取过
     def flag_log(url_dict):
+        log_folder_path = "./logs"
+        isExists = os.path.exists(log_folder_path)
+        if not isExists:
+            os.makedirs(log_folder_path)
         # a+模式文件不存在则创建，追加位置从文本末尾开始
-        file = open('logs.txt', 'a+', encoding='utf-8')
+        file = open('./logs.txt', 'a+', encoding='utf-8')
         file.seek(0)  # 为了读取文件，把游标设置到文件头开始读
         for line in file:  # 逐行遍历文件内容
             for key in list(url_dict.keys()):  # 遍历页面抓取的JS链接URL，如果相同即抓过数据了，从URL字典里删除
